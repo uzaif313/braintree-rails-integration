@@ -1,0 +1,42 @@
+<%- model_class = Product -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
+<dl class="dl-horizontal">
+  <dt><strong><%= model_class.human_attribute_name(:name) %>:</strong></dt>
+  <dd><%= @product.name %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:description) %>:</strong></dt>
+  <dd><%= @product.description %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:price) %>:</strong></dt>
+  <dd><%= @product.price %></dd>
+</dl>
+
+ <%= form_tag "/checkout", html: { id: "checkout" } do %>
+    <p>
+      <%= label_tag "first_name" %><br>
+      <%= text_field_tag "first_name", '', class: 'form-control' %>
+    </p>
+
+    <p>
+      <%= label_tag "last_name" %><br>
+      <%= text_field_tag "last_name", '', class: 'form-control' %>
+    </p>
+    <%=hidden_field_tag :price,@product.price%>
+    <div id="dropin"></div>
+
+    <!-- <input type="submit" value="Pay $10" class="btn btn-primary"> -->
+    <%= submit_tag "Buy Now",class:"btn btn-success"%>
+    <%= link_to t('.back', :default => t("helpers.links.back")),
+          products_path, :class => 'btn btn-default'  %>
+  <% end %>
+
+<% content_for :javascript do %>
+  <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
+  <script type="text/javascript">
+      braintree.setup(
+        "<%=@client_token%>",
+        'dropin',{
+          container:'dropin'
+        })
+  </script>
+<% end %>
